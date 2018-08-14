@@ -1,0 +1,19 @@
+{
+  "name": "twitter-haikus",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "emoji-regex": "^7.0.0",
+    "express": "^4.16.3",
+    "regex-emoji": "^2.0.6",
+    "twit": "^2.2.11"
+  },
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "devDependencies": {
+    "concurrently": "^3.6.1"
+  }
+}
