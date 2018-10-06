@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "body-parser": "^1.18.3",
     "emoji-regex": "^7.0.0",
     "express": "^4.16.3",
+    "number-to-words": "^1.2.4",
     "regex-emoji": "^2.0.6",
-    "twit": "^2.2.11"
+    "syllable": "^3.1.0",
+    "twit": "^2.2.11",
+    "twitter-text": "^2.0.5"
   },
   "scripts": {
     "client": "cd client && yarn start",

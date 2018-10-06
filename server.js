@@ -1,8 +1,10 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 // Twitter API client for node supporting the REST and Streaming API
 const Twit = require('twit');
 const emojiRegex = require('emoji-regex');
-// const regexEmoji = require('regex-emoji');
+const numberToWords = require('number-to-words');
+const syllable = require('syllable');
 
 const T = new Twit({
   consumer_key:        'sqpssPBQAX7HhA8gUP8HBGUcZ',
@@ -16,20 +18,95 @@ const T = new Twit({
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.get('/api/hello', (req, res) => {
-  // lang should be 'eu' by default
-  T.get('search/tweets', { q: 'banana', lang: 'en', count: 100 }, (err, data, response) => {
-    const formattedData = data.statuses.map((status) => {
-      return {
-        text: status.text
-          .replace(/([a-zA-Z\d])+:/g, '')
-          .replace(/@([a-zA-Z1-9-_]+)/g, '')
-          .replace(/#([a-zA-Z1-9-_]+)/g, '')
-          .replace(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/g, '')
-          .replace(emojiRegex(), ''),
-      };
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+const capitalize = string =>
+  string.charAt(0).toUpperCase() + string.slice(1);
+
+const replaceNumbers = (string) => {
+  let finalString = string;
+  const numbers = string.match(/\b\d+\b/g);
+
+  if (numbers && numbers.length > 0) {
+    numbers.forEach((number) => {
+      finalString = finalString.replace(number, numberToWords.toWords(parseInt(number, 10)));
     });
-    res.send({ express: formattedData });
+  }
+
+  return finalString;
+};
+
+app.post('/api/hello', (req, res) => {
+  const { screen_name } = req.body;
+
+  // lang should be 'eu' by default
+  // The count should be the number of Tweets this user has posted in total
+  T.get('statuses/user_timeline', { screen_name, lang: 'en', count: 3000 }, (err, data, response) => {
+    console.log('DATA', data);
+
+    const formattedData = data.map((status) => {
+      // Convert from digits to worded numbers and capitalize
+      const text = capitalize(replaceNumbers(status.text
+        // Remove new lines, replace with spaces
+        .replace(/[↵\n]/g, ' ')
+        // Remove URLS
+        .replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g, '')
+        // Remove retweets and following mention
+        .replace(/^RT+[ \t]*@([a-zA-Z0-9-_]+)+[ \t]*/g, '')
+        // Remove mentions all together
+        .replace(/@([a-zA-Z0-9-_]+)+[ \t]*/g, '')
+        // Remove RT after mentions
+        .replace(/RT/g, '')
+        // Remove #hashtags
+        .replace(/#([a-zA-Z0-9-_]+)/g, '')
+        // Remove emojis
+        .replace(emojiRegex(), '')
+        // Remove punctuation
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+        // Remove double-spaces/tabs/indentation
+        .replace(/\s\s+/g, ' ')
+        // Trim removing surrounding white space
+        .trim()));
+
+        return {
+          _id: status.id,
+          text,
+        };
+    });
+
+    let haikus = [];
+
+    let haiku = {
+      _id: '',
+      first: '',
+      second: '',
+      third: '',
+    };
+
+    formattedData.forEach(({ _id, text }) => {
+      if (!haiku.first) {
+        haiku.first = syllable(text) === 5 ? text : '';
+      } else if (!haiku.second) {
+        haiku.second = syllable(text) === 7 ? text : '';
+      } else if (!haiku.third && syllable(text) === 5) {
+        haiku.third = text;
+        haikus.push({
+          ...haiku,
+          _id,
+        });
+        haiku = {};
+        console.log(haiku);
+      }
+    });
+
+    console.log(haikus);
+
+    res.send({
+      haikus,
+      name: data[0].user.name,
+      count: data[0].user.statuses_count,
+    });
   });
 });
 

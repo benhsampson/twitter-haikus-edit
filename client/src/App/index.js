@@ -13,7 +13,7 @@ const App = () => (
         component={Home}
       />
       <Route
-        path="/results"
+        path="/results/:screen_name"
         component={Results}
       />
       <Route

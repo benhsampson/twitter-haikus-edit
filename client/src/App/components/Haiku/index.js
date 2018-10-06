@@ -15,20 +15,22 @@ import {
 
 class Haiku extends React.Component {
   render() {
+    const { first, second, third } = this.props.haiku;
+    const { screenName } = this.props;
     return (
       <HaikuWrapper>
         <HaikuText>
-          An old silent pond...
+          {first}
         </HaikuText>
         <HaikuText>
-          A frog jumps into the pond,
+          {second}
         </HaikuText>
         <HaikuText>
-          splash! Silence again.
+          {third}
         </HaikuText>
         <HaikuFooter>
-          <HaikuUsername href="https://twitter.com" target="_blank">
-            @frogster
+          <HaikuUsername href={`https://twitter.com/${screenName}`} target="_blank">
+            @{screenName}
           </HaikuUsername>
           <HaikuActions className="actions">
             <HaikuFavoriteButton>

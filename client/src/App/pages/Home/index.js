@@ -37,6 +37,7 @@ import {
 
 class App extends React.Component {
   state = {
+    screen_name: '',
     focused: false,
     currentPlaceholderIndex: 0,
     response: '',
@@ -44,10 +45,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.rotatePlaceholder();
-
-    this.callApi()
-      .then(res => console.log(res.express))
-      .catch(err => console.log(err));
   }
 
   rotatePlaceholder = () => {
@@ -62,15 +59,11 @@ class App extends React.Component {
     }, 3000);
   }
 
-  // This method is called to interact with our Express API back-end
-  callApi = async () => {
-    const response = await fetch('/api/hello');
-    const body = await response.json();
+  onSubmit = (e) => {
+    e.preventDefault();
 
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  }
+    this.props.history.push(`/results/${this.state.screen_name}`)
+  };
 
   render() {
     return (
@@ -90,22 +83,26 @@ class App extends React.Component {
                   <BrandHeading>Twitter Haikus</BrandHeading>
                 </Brand>
                 <Heading>Turn anyone's tweets into a beautifully compiled three-line Haiku poem.</Heading>
-                <Subheading>Simpy enter their Twitter username below</Subheading>
-                <InputWrapper>
-                  <InputGroup focused={this.state.focused}>
-                    <InputPrepend>@</InputPrepend>
-                    <Input
-                      autoFocus
-                      // TODO: rotate this
-                      placeholder={placeholders[this.state.currentPlaceholderIndex]}
-                      onFocus={() => this.setState({ focused: true })}
-                      onBlur={() => this.setState({ focused: false })}
-                    />
-                    <InputInlineButton>
-                      Generate
-                    </InputInlineButton>
-                  </InputGroup>
-                </InputWrapper>
+                <Subheading>Simpy enter their Twitter screen name below</Subheading>
+                <form onSubmit={this.onSubmit}>
+                  <InputWrapper>
+                    <InputGroup focused={this.state.focused}>
+                      <InputPrepend>@</InputPrepend>
+                      <Input
+                        autoFocus
+                        // TODO: rotate this
+                        placeholder={placeholders[this.state.currentPlaceholderIndex]}
+                        onFocus={() => this.setState({ focused: true })}
+                        onBlur={() => this.setState({ focused: false })}
+                        value={this.state.screen_name}
+                        onChange={e => this.setState({ screen_name: e.target.value })}
+                      />
+                      <InputInlineButton>
+                        Generate
+                      </InputInlineButton>
+                    </InputGroup>
+                  </InputWrapper>
+                </form>
               </Block>
             </SectionContent>
           </Section>
@@ -117,7 +114,14 @@ class App extends React.Component {
           <Section>
             <SectionContent>
               <Haikus>
-                <Haiku />
+                <Haiku
+                  haiku={{
+                    first: 'Test',
+                    second: 'Test',
+                    third: 'Test',
+                  }}
+                  screenName="frogster"
+                />
               </Haikus>
             </SectionContent>
           </Section>
