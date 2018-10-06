@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { injectGlobal } from 'styled-components';
+
+import registerServiceWorker from './utils/registerServiceWorker';
+
+import base from './constants/base';
+
 import App from './App';
-import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(<App />, document.getElementById('root'));
+
+injectGlobal`${base}`;
+
 registerServiceWorker();
