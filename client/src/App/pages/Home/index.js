@@ -23,6 +23,7 @@ import {
   InputPrepend,
   Input,
   InputInlineButton,
+  Error,
   TitleBox,
   TitleBoxContainer,
   TitleBoxTitle,
@@ -37,6 +38,7 @@ import {
 
 class App extends React.Component {
   state = {
+    error: '',
     screen_name: '',
     focused: false,
     currentPlaceholderIndex: 0,
@@ -59,10 +61,31 @@ class App extends React.Component {
     }, 3000);
   }
 
-  onSubmit = (e) => {
+  onSubmit = async (e) => {
     e.preventDefault();
 
-    this.props.history.push(`/results/${this.state.screen_name}`)
+    // convert the screen name to lowercase rather than give an error
+    const screen_name = this.state.screen_name.toLowerCase();
+
+    const response = await fetch('/api/validate-screen-name', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ screen_name }),
+    });
+
+    const formattedResponse = await response.json();
+
+    console.log(formattedResponse);
+
+    if (response.status !== 200) throw Error(response.message);
+
+    if (!formattedResponse.error) {
+      this.props.history.push(`/results/${formattedResponse.screen_name}`);
+    } else {
+      this.setState({ error: formattedResponse.error });
+    }
   };
 
   render() {
@@ -80,13 +103,13 @@ class App extends React.Component {
                     width="50"
                     height="50"
                   />
-                  <BrandHeading>Twitter Haikus</BrandHeading>
+                  <BrandHeading>Twitter Poems</BrandHeading>
                 </Brand>
-                <Heading>Turn anyone's tweets into a beautifully compiled three-line Haiku poem.</Heading>
-                <Subheading>Simpy enter their Twitter screen name below</Subheading>
+                <Heading>Turn anyone's tweets into a beautifully compiled Sonnet or Haiku.</Heading>
+                <Subheading>Simply choose the type of poem then a keyword or username.</Subheading>
                 <form onSubmit={this.onSubmit}>
                   <InputWrapper>
-                    <InputGroup focused={this.state.focused}>
+                    <InputGroup focused={this.state.focused} error={!!this.state.error}>
                       <InputPrepend>@</InputPrepend>
                       <Input
                         autoFocus
@@ -101,6 +124,7 @@ class App extends React.Component {
                         Generate
                       </InputInlineButton>
                     </InputGroup>
+                    {this.state.error ? <Error>{this.state.error}</Error> : ''}
                   </InputWrapper>
                 </form>
               </Block>
@@ -108,7 +132,7 @@ class App extends React.Component {
           </Section>
           <TitleBox>
             <TitleBoxContainer>
-              <TitleBoxTitle>Recently generated haikus</TitleBoxTitle>
+              <TitleBoxTitle>Recently favorited/shared poems</TitleBoxTitle>
             </TitleBoxContainer>
           </TitleBox>
           <Section>
@@ -127,7 +151,7 @@ class App extends React.Component {
           </Section>
           <TitleBox>
             <TitleBoxContainer>
-              <TitleBoxTitle>Who's behind this work of genius?</TitleBoxTitle>
+              <TitleBoxTitle>Who's behind this?</TitleBoxTitle>
             </TitleBoxContainer>
           </TitleBox>
           <Section>

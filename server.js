@@ -37,6 +37,38 @@ const replaceNumbers = (string) => {
   return finalString;
 };
 
+app.post('/api/validate-screen-name', (req, res) => {
+  const { screen_name } = req.body;
+
+  // * cannot be empty
+  // * may only contain underscores, letters, and numbers <-- THAT'S IT
+  // must be a maximum of 15 characters
+
+  // capitals will be converted to lowercase
+
+  // const isValid = /^[a-zA-Z0-9_]{1,15}$/g.test(screen_name);
+  const isEmpty = /^$/g.test(screen_name);
+  const isGreaterThan15Characters = /^.{16,}$/g.test(screen_name);
+  const containsUnacceptedCharacters = !/^[a-zA-Z0-9_]+/g.test(screen_name);
+
+  if (isEmpty) {
+    res.send({ error: 'This field is required' });
+  } else if (isGreaterThan15Characters) {
+    res.send({ error: 'This cannot exceed 15 characters' });
+  } else if (containsUnacceptedCharacters) {
+    res.send({ error: 'Can only contain letters, numbers, and underscores' });
+  // Passed all the Twitter screen_name semantic requirements
+  } else {
+    T.get('statuses/user_timeline', { screen_name, lang: 'en' }, (error, data) => {
+      if (error) {
+        res.send({ error: 'A user with that screen name does not exist' });
+      } else {
+        res.send({ screen_name });
+      }
+    });
+  }
+});
+
 app.post('/api/hello', (req, res) => {
   const { screen_name } = req.body;
 

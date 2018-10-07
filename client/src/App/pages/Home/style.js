@@ -55,7 +55,7 @@ const BrandHeading = styled.h4`
 `;
 
 const Heading = styled.h1`
-  font-size: 2em;
+  font-size: 2.25em;
   font-weight: 700;
   line-height: 1.3;
   margin-bottom: 1rem;
@@ -73,8 +73,12 @@ const InputWrapper = styled.div`
 `;
 
 const InputGroup = styled.div`
-  border: 1px solid ${({ focused }) => focused ? '#9E9E9E' : '#E0E0E0'};
   border-radius: 8px;
+  border-style: solid;
+  ${({ error, focused }) => !!error
+    ? `border-color: #f14245;`
+    : (focused ? 'border-color: #9E9E9E;' : 'border-color: #E0E0E0;')};
+  border-width: 1px;
   display: flex;
   position: relative;
   overflow: hidden;
@@ -130,6 +134,13 @@ const InputInlineButton = styled.button`
   }
 `;
 
+const Error = styled.p`
+  color: #E41317;
+  font-size: 1.25em;
+  text-align: right;
+  margin-top: 1rem;
+`;
+
 const TitleBox = styled.div`
   position: relative;
   width: 100%;
@@ -180,14 +191,6 @@ const AvatarWrapper = styled.div`
   position: relative;
   width: 8rem;
   transition: all 0.2s ease;
-
-  &:hover {
-    ${'' /* box-shadow: 0 2px 40px rgba(0,0,0,0.3); */}
-    height: 10.5rem;
-    width: 10.5rem;
-    margin-top: -1.25rem;
-    margin-bottom: 2.75rem;
-  }
 
   &:before {
     content: "";
@@ -258,6 +261,7 @@ export {
   InputPrepend,
   Input,
   InputInlineButton,
+  Error,
   TitleBox,
   TitleBoxContainer,
   TitleBoxTitle,
