@@ -1,14 +1,15 @@
 import React from 'react';
 
+import BackButton from '../../components/BackButton';
+import FavoritesButton from '../../components/FavoritesButton';
+import Icon from '../../components/Icon';
 import Haiku from '../../components/Haiku';
 
 import {
   Wrapper,
-  TopBar,
   Container,
   Section,
   SectionContent,
-  Block,
   Heading,
   H,
   Subheading,
@@ -17,6 +18,7 @@ import {
 
 class Results extends React.Component {
   state = {
+    hoveringFavorites: false,
     loading: false,
     haikus: [],
     name: '',
@@ -56,11 +58,24 @@ class Results extends React.Component {
     return (
       <Wrapper>
         <Container>
-          {/* <TopBar /> */}
+          <FavoritesButton
+            hover={this.state.hoveringFavorites}
+            title="Look at favorites"
+            onClick={() => this.props.history.push('/favorites')}
+            onMouseOver={() => this.setState({ hoveringFavorites: true })}
+            onMouseLeave={() => this.setState({ hoveringFavorites: false })}
+          >
+            <Icon
+              icon="heart"
+              fill={this.state.hoveringFavorites ? '#FFF' : '#F76D6F'}
+              mr="0.75rem"
+            />
+            3
+          </FavoritesButton>
           <Section>
             <SectionContent>
-              {/* TODO: Add back button */}
-              <Heading>Haikus generated from <H>{this.state.name}'s {this.state.count} Tweets</H></Heading>
+              <BackButton onClick={() => this.props.history.goBack()} />
+              <Heading>Poems generated from<br /><H>{this.state.name}'s {this.state.count} Tweets</H></Heading>
               <Subheading>Favorite or share the ones you like</Subheading>
               {!this.state.loading ? (
                 <Haikus>

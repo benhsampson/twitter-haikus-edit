@@ -8,8 +8,13 @@ const HaikuWrapper = styled.div`
   position: relative;
 
   &:hover {
-    .actions {
+    .favorite-button {
       visibility: visible;
+    }
+
+    .share-button {
+      visibility: visible;
+      position: static;
     }
   }
 `;
@@ -35,11 +40,6 @@ const HaikuActions = styled.div`
   display: grid;
   grid-auto-flow: column;
   grid-gap: 1rem;
-  visibility: hidden;
-`;
-
-const Icon = styled.img`
-  margin-right: 0.5rem;
 `;
 
 const HaikuFavoriteButton = styled.button`
@@ -47,7 +47,6 @@ const HaikuFavoriteButton = styled.button`
   background: transparent;
   border: 2px solid #FA9986;
   border-radius: 5px;
-  color: #f57157;
   cursor: pointer;
   display: flex;
   font-weight: 500;
@@ -55,15 +54,24 @@ const HaikuFavoriteButton = styled.button`
   outline: 0;
   padding: 0.25rem 0.75rem;
 
-  &:hover, &:focus {
-    background: #fa9986;
+  ${({ favorited }) => favorited ? `
     color: #FFF;
-  }
+    background: #FA9986;
+    visibility: visible;
+  ` : `
+    color: #F57157;
+    visibility: hidden;
 
-  &:active {
-    background: #f57157;
-    border-color: #f57157;
-  }
+    &:hover, &:focus {
+      background: #fa9986;
+      color: #FFF;
+    }
+
+    &:active {
+      background: #f57157;
+      border-color: #f57157;
+    }
+  `}
 `;
 
 const HaikuShareButton = styled.button`
@@ -71,13 +79,15 @@ const HaikuShareButton = styled.button`
   background: transparent;
   border: 2px solid #86D3FA;
   border-radius: 5px;
-  color: #30aeed;
+  color: #30AEED;
   cursor: pointer;
   display: flex;
   font-weight: 500;
   justify-content: center;
   outline: 0;
   padding: 0.25rem 0.75rem;
+  visibility: hidden;
+  position: absolute;
 
   &:hover, &:focus {
     background: #86d3fa;
@@ -85,8 +95,8 @@ const HaikuShareButton = styled.button`
   }
 
   &:active {
-    background: #30aeed;
-    border-color: #30aeed;
+    background: #30AEED;
+    border-color: #30AEED;
   }
 `;
 
@@ -110,7 +120,6 @@ export {
   HaikuText,
   HaikuFooter,
   HaikuActions,
-  Icon,
   HaikuFavoriteButton,
   HaikuShareButton,
   HaikuUsername,

@@ -5,19 +5,12 @@ const Wrapper = styled.div`
   min-height: 100vh;
 `;
 
-const TopBar = styled.div`
-  background: #222;
-  background-size: cover;
-  background-position: bottom;
-  height: 0.5rem;
-  width: 100%;
-`;
-
 const Container = styled.div`
   background: #FFF;
   margin: 0 auto;
   max-width: 1360px;
   min-height: 100vh;
+  position: relative;
   width: 100%;
 `;
 
@@ -76,8 +69,8 @@ const InputGroup = styled.div`
   border-radius: 8px;
   border-style: solid;
   ${({ error, focused }) => !!error
-    ? `border-color: #f14245;`
-    : (focused ? 'border-color: #9E9E9E;' : 'border-color: #E0E0E0;')};
+    ? `border-color: #F14245;`
+    : (focused ? 'border-color: #868686;' : 'border-color: #CCC;')};
   border-width: 1px;
   display: flex;
   position: relative;
@@ -104,16 +97,18 @@ const Input = styled.input`
   width: 100%;
 
   &::placeholder {
-    color: rgba(0,0,0,0.4);
+    color: rgba(0,0,0,0.6);
   }
 `;
 
 const InputInlineButton = styled.button`
+  align-items: center;
   background: #556AF5;
   border: 0;
   border-radius: 6px;
   color: #FFF;
   cursor: pointer;
+  display: flex;
   font-size: 1.25em;
   font-weight: 500;
   outline: none;
@@ -135,7 +130,7 @@ const InputInlineButton = styled.button`
 `;
 
 const Error = styled.p`
-  color: #E41317;
+  color: #ED3034;
   font-size: 1.25em;
   text-align: right;
   margin-top: 1rem;
@@ -246,7 +241,6 @@ const LinkInline = styled.a`
 
 export {
   Wrapper,
-  TopBar,
   Container,
   Section,
   SectionContent,

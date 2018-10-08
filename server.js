@@ -41,18 +41,20 @@ app.post('/api/validate-screen-name', (req, res) => {
   const { screen_name } = req.body;
 
   // * cannot be empty
+  // * cannot have spaces
   // * may only contain underscores, letters, and numbers <-- THAT'S IT
-  // must be a maximum of 15 characters
+  // * must be a maximum of 15 characters
+  // * must be an actual Twitter screen name
 
-  // capitals will be converted to lowercase
-
-  // const isValid = /^[a-zA-Z0-9_]{1,15}$/g.test(screen_name);
   const isEmpty = /^$/g.test(screen_name);
+  const containsSpaces = / /g.test(screen_name);
   const isGreaterThan15Characters = /^.{16,}$/g.test(screen_name);
   const containsUnacceptedCharacters = !/^[a-zA-Z0-9_]+/g.test(screen_name);
 
   if (isEmpty) {
     res.send({ error: 'This field is required' });
+  } else if (containsSpaces) {
+    res.send({ error: 'No spaces, please' });
   } else if (isGreaterThan15Characters) {
     res.send({ error: 'This cannot exceed 15 characters' });
   } else if (containsUnacceptedCharacters) {

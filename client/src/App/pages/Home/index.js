@@ -2,13 +2,12 @@ import React from 'react';
 
 import placeholders from '../../../constants/placeholders';
 
-import logo from '../../../assets/logo.png';
-
+import FavoritesButton from '../../components/FavoritesButton';
+import Icon from '../../components/Icon';
 import Haiku from '../../components/Haiku';
 
 import {
   Wrapper,
-  TopBar,
   Container,
   Section,
   SectionContent,
@@ -38,6 +37,7 @@ import {
 
 class App extends React.Component {
   state = {
+    hoveringFavorites: false,
     error: '',
     screen_name: '',
     focused: false,
@@ -46,6 +46,7 @@ class App extends React.Component {
   };
 
   componentDidMount() {
+    console.log(this.props);
     this.rotatePlaceholder();
   }
 
@@ -64,8 +65,8 @@ class App extends React.Component {
   onSubmit = async (e) => {
     e.preventDefault();
 
-    // convert the screen name to lowercase rather than give an error
-    const screen_name = this.state.screen_name.toLowerCase();
+    // convert the screen name to lowercase and trim rather than give an error
+    const screen_name = this.state.screen_name.toLowerCase().trim();
 
     const response = await fetch('/api/validate-screen-name', {
       method: 'POST',
@@ -92,7 +93,20 @@ class App extends React.Component {
     return (
       <Wrapper>
         <Container>
-          {/* <TopBar /> */}
+          <FavoritesButton
+            hover={this.state.hoveringFavorites}
+            title="Look at favorites"
+            onClick={() => this.props.history.push('/favorites')}
+            onMouseOver={() => this.setState({ hoveringFavorites: true })}
+            onMouseLeave={() => this.setState({ hoveringFavorites: false })}
+          >
+            <Icon
+              icon="heart"
+              fill={this.state.hoveringFavorites ? '#FFF' : '#F76D6F'}
+              mr="0.75rem"
+            />
+            3
+          </FavoritesButton>
           <Section>
             <SectionContent>
               <Block>
@@ -121,6 +135,11 @@ class App extends React.Component {
                         onChange={e => this.setState({ screen_name: e.target.value })}
                       />
                       <InputInlineButton>
+                        <Icon
+                          icon="bolt"
+                          fill="#FFF"
+                          mr="0.75rem"
+                        />
                         Generate
                       </InputInlineButton>
                     </InputGroup>
